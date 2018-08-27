@@ -20,16 +20,23 @@ import argparse
 version = "0.0.1"
 
 ################################     OUTPUT     ################################
-def output_data(changes, output_file=None, csv=False, delimiter=','):# {{{
+def output_data(changes, output_file=None, csv=False, delimiter=',', indicator='TRUE'):# {{{
   """ Prints or writes the list of changes, depending on program arguments. """
-  if output_file:
-    pass
-  for c in changes:
-    if csv:
+  downtime = []
+  if changes[0]['status'] != indicator:
+    changes = changes[1:]
+  if len(changes) % 2 != 0:
+    changes = changes[:-1]
+  n = 0
+  while n < len(changes):
+    downtime.append({'from': changes[n]['time'], 'to': changes[n+1]['time']})
+    n += 2
+  if csv:
+    for c in changes:
       print(c['time'] + delimiter + c['status'])
-    else:
-      # This should be much prettier
-      print(c['time'] + ": " + c['status'])
+  else:
+    for span in downtime:
+      print("Downtime from [" + span['from'] + "] to [" + span['to'] + "]")
 # }}}
 
 #################################     MAIN     #################################
@@ -47,7 +54,7 @@ def main(csv_file, delimiter, indicator, status_col, time_col, begin, csv_format
       if s != prev:
         changes.append({'time': t, 'status': s})
         prev = s
-  output_data(changes, csv=csv, delimiter=delimiter, indicator=indicator)
+  output_data(changes, csv=csv_format, delimiter=delimiter, indicator=indicator)
 # }}}
 
 ############################     BOOTSTRAPPING     ############################
