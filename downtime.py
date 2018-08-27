@@ -12,12 +12,28 @@ Takes a CSV file with registered up/downtimes and returns the gaps.
 ###############################     IMPORTS     ###############################{{{
 import csv
 import sys
-import time
 import argparse
 # }}}
 
 ##############################     VARIABLES     ##############################
 version = "0.0.1"
+
+################################     INPUT     ################################
+def input_data(csv_file, delimiter, status_col, time_col, begin):# {{{
+  with csv_file as f:
+    csv_lines = csv.reader(f, delimiter=delimiter)
+    for s in range(begin):
+      next(csv_lines)
+    prev = ""
+    changes = []
+    for line in csv_lines:
+      t = line[time_col]
+      s = line[status_col]
+      if s != prev:
+        changes.append({'time': t, 'status': s})
+        prev = s
+  # }}}
+  return changes
 
 ################################     OUTPUT     ################################
 def output_data(changes, output_file=None, csv_format=False, delimiter=',', indicator='TRUE'):# {{{
@@ -54,18 +70,7 @@ def output_data(changes, output_file=None, csv_format=False, delimiter=',', indi
 #################################     MAIN     #################################
 def main(csv_file, delimiter, indicator, status_col, time_col, begin, csv_format, output):# {{{
   """ Reads the file and prints all gaps. """
-  with csv_file as f:
-    csv_lines = csv.reader(f, delimiter=delimiter)
-    for s in range(begin):
-      next(csv_lines)
-    prev = ""
-    changes = []
-    for line in csv_lines:
-      t = line[time_col]
-      s = line[status_col]
-      if s != prev:
-        changes.append({'time': t, 'status': s})
-        prev = s
+  changes = input_data(csv_file, delimiter, status_col, time_col, begin)
   output_data(changes, csv_format=csv_format, delimiter=delimiter, indicator=indicator, output_file=output)
 # }}}
 
