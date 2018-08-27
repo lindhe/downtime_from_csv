@@ -59,11 +59,11 @@ def output_data(changes, output_file=None, csv_format=False, delimiter=',', indi
   else:
     if output_file:
       with output_file as f:
-        for span in downtime:
-          human_readable = "Downtime from [" + span['from'] + "] to [" + span['to'] + "]\n"
+        for interval in downtime:
+          human_readable = "Downtime from [" + interval['from'] + "] to [" + interval['to'] + "]\n"
           f.write(human_readable)
-    for span in downtime:
-      human_readable = "Downtime from [" + span['from'] + "] to [" + span['to'] + "]"
+    for interval in downtime:
+      human_readable = "Downtime from [" + interval['from'] + "] to [" + interval['to'] + "]"
       print(human_readable)
 # }}}
 
